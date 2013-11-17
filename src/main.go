@@ -29,6 +29,7 @@ const PRIMEBITS int = 1024
 // main implements all necessary functionality to setup the conversation
 // between Alice and Bob
 func main() {
+	runtimeTest()
 	var message string
 	fmt.Print("Please enter the message to be exchanged in encrypted form: ")
 	reader := bufio.NewReader(os.Stdin)
@@ -63,7 +64,11 @@ func alice(msg string, prime *big.Int, channel chan []*big.Int) {
 	fmt.Printf("Alice's secret inverse:\n%x\n\n", aInv)
 	fmt.Println("Alice encrypts her message!")
 	var messageInt []*big.Int = shamir.SliceMessage(msg, prime)
-	x := shamir.Calculate(messageInt, a, prime)
+
+	// Parrallel
+	//x := shamir.Calculate(messageInt, a, prime)
+	x := shamir.CalculateParallel(messageInt, a, prime)
+
 	fmt.Printf("Alice now sends the encrypted message to Bob:\n%x\n\n",
 		shamir.GlueMessage(x))
 	channel <- x

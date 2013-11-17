@@ -1,4 +1,5 @@
-/* Copyright 2013 Michael Galetzka, Jonas Woerlein
+/* Copyright 2013 Michael Galetzka, Jonas Woerlein, Georg Hartmann, 
+	Manuel Schweizer
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -58,12 +59,37 @@ func GenerateExponents(prime *big.Int) (exp, expInv *big.Int) {
 
 // Calculate encrypts or decrypts a message given as []*big.Int using the
 // big.Int exponent and modulus
-func Calculate(message []*big.Int, exponent *big.Int,
-	modulus *big.Int) []*big.Int {
+func Calculate(message []*big.Int, exponent *big.Int, modulus *big.Int) []*big.Int {
 	var returnVal []*big.Int = make([]*big.Int, len(message))
 	for i := 0; i < len(returnVal); i++ {
 		returnVal[i] = big.NewInt(1).Exp(message[i], exponent, modulus)
 	}
+	return returnVal
+}
+
+// Parallel
+type empty struct {
+}
+
+// Calculate encrypts or decrypts a message given as []*big.Int using the
+// big.Int exponent and modulus
+func CalculateParallel(message []*big.Int, exponent *big.Int, modulus *big.Int) []*big.Int {
+	blocks := len(message)
+	var returnVal []*big.Int = make([]*big.Int, blocks)
+	var sem = make(chan empty, len(message))
+
+	for i := 0; i < blocks; i++ {
+		go func(i int) {
+			returnVal[i] = big.NewInt(1).Exp(message[i], exponent, modulus)
+			sem <- empty{}
+		}(i)
+
+	}
+
+	for i := 0; i < blocks; i++ {
+		<-sem
+	}
+
 	return returnVal
 }
 
