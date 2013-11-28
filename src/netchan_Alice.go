@@ -1,3 +1,17 @@
+/* Copyright 2013 Michael Galetzka, Jonas Woerlein, Christoph Tonnier
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+
 // netchan_Alice
 package main
 
@@ -70,7 +84,7 @@ func alice(msg string, channelReceive chan []*big.Int, channelSend chan []*big.I
 	x = <-channelReceive
 	fmt.Println("Alice received the double-encrypted message and is now" +
 		" decrypting her part!")
-	y := shamir.Calculate(x, aInv, prime)
+	y := shamir.CalculateParallel(x, aInv, prime)
 	fmt.Printf("Alice now sends the partly decrypted message to Bob:\n%x\n\n",
 		shamir.GlueMessage(y))
 	channelSend <- y

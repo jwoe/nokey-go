@@ -1,3 +1,17 @@
+/* Copyright 2013 Michael Galetzka, Jonas Woerlein, Christoph Tonnier
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+
 // netchan_Bob
 package main
 
@@ -47,7 +61,7 @@ func bob(channelReceive chan []*big.Int, channelSend chan []*big.Int, stop chan 
 	fmt.Printf("Bob's secret inverse:\n%x\n\n", bInv)
 	fmt.Println("Bob received the encrypted message from Alice and is now" +
 		" encrypting it too!")
-	y := shamir.Calculate(x, b, prime)
+	y := shamir.CalculateParallel(x, b, prime)
 	fmt.Printf("Bob now sends the double-encrypted message back to "+
 		"Alice:\n%x\n\n", shamir.GlueMessage(y))
 	channelSend <- y
@@ -55,7 +69,7 @@ func bob(channelReceive chan []*big.Int, channelSend chan []*big.Int, stop chan 
 	x = <-channelReceive
 	fmt.Println("Bob received the second message from Alice and is now " +
 		"decrypting it!")
-	y = shamir.Calculate(x, bInv, prime)
+	y = shamir.CalculateParallel(x, bInv, prime)
 	fmt.Println("Bob decrypted the following message from Alice: " +
 		shamir.GlueMessage(y))
 	stop <- 1

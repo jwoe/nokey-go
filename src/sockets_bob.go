@@ -19,10 +19,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/jwoe/nokey-go/src/shamir"
 	"math/big"
 	"net"
 	"os"
-	"github.com/jwoe/nokey-go/src/shamir"
 	"time"
 )
 
@@ -31,9 +31,6 @@ const PRIMEBITS int = 1024
 // main implements all necessary functionality to setup the conversation
 // between Alice and Bob
 func main() {
-
-	//msg := readMessage()
-	//msg := "Hallo"
 
 	stop := make(chan int)
 	var time0 time.Time
@@ -66,7 +63,7 @@ func bob(channel chan []*big.Int, stop chan int, conn net.Conn) {
 	fmt.Println("Bob computes a secret Exponent and the inverse of it")
 	fmt.Printf("Bob's secret exponent:\n%x\n", b)
 	fmt.Printf("Bob's secret inverse:\n%x\n\n", bInv)
-	fmt.Println("Bob received the encrypted message from Alice and is now" +" encrypting it too!")
+	fmt.Println("Bob received the encrypted message from Alice and is now" + " encrypting it too!")
 	y := shamir.CalculateParallel(x, b, prime)
 	fmt.Printf("Bob now sends the double-encrypted message back to "+"Alice:\n%x\n\n", shamir.GlueMessage(y))
 	channel <- y
@@ -74,7 +71,7 @@ func bob(channel chan []*big.Int, stop chan int, conn net.Conn) {
 	fmt.Println("Bob is waiting for Alice's answer...")
 	receive(channel, conn)
 	x = <-channel
-	fmt.Println("Bob received the second message from Alice and is now " +"decrypting it!")
+	fmt.Println("Bob received the second message from Alice and is now " + "decrypting it!")
 	y = shamir.CalculateParallel(x, bInv, prime)
 	fmt.Println("Bob decrypted the following message from Alice: " + shamir.GlueMessage(y))
 
